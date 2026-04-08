@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -47,6 +48,11 @@ func setSessionCookie(c echo.Context, token string) {
 
 func main() {
 	e := echo.New()
+	appAddr := strings.TrimSpace(os.Getenv("APP_ADDR"))
+	if appAddr == "" {
+		// Default to loopback so traffic goes through Caddy in production.
+		appAddr = "127.0.0.1:6432"
+	}
 
 	var totalGoal int = 1500
 
@@ -168,5 +174,6 @@ func main() {
 		return Front.RowList(counts, toGo, totalCount).Render(c.Request().Context(), c.Response().Writer)
 	})
 
-	e.Logger.Fatal(e.Start(":6432"))
+	e.Logger.Infof("starting app server on %s", appAddr)
+	e.Logger.Fatal(e.Start(appAddr))
 }

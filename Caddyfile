@@ -1,0 +1,11 @@
+{
+	# Optional but recommended for ACME account notifications.
+	email {$ACME_EMAIL}
+}
+
+# Set APP_DOMAIN in environment for your real domain.
+# Defaults to the current domain for convenience.
+{$APP_DOMAIN:flexoes.bulga.top} {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:6432
+}
