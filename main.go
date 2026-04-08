@@ -92,7 +92,7 @@ func main() {
 			return c.String(http.StatusBadRequest, "username and password are required")
 		}
 
-		token, createdAt, valid, err := utils.AuthenticateUserAndGetToken(db, username, password)
+		token, _, valid, err := utils.AuthenticateUserAndGetToken(db, username, password)
 		if err != nil {
 			e.Logger.Error(err)
 			return c.String(http.StatusInternalServerError, "internal server error")
@@ -108,10 +108,7 @@ func main() {
 			return c.String(http.StatusOK, "login successful")
 		}
 
-		return c.JSON(http.StatusOK, map[string]string{
-			"token":      token,
-			"created_at": createdAt.Format(time.RFC3339),
-		})
+		return c.Redirect(http.StatusSeeOther, "/")
 	})
 
 	e.POST("/registerPushs", func(c echo.Context) error {
@@ -152,8 +149,12 @@ func main() {
 			return c.String(http.StatusInternalServerError, "internal server error")
 		}
 
-		message := "Registered " + strconv.Itoa(pushUps) + " push ups for " + username + "."
-		return Front.PushRegisterResponse(message, counts, toGo, totalCount).Render(c.Request().Context(), c.Response().Writer)
+		if c.Request().Header.Get("HX-Request") == "true" {
+			message := "Registered " + strconv.Itoa(pushUps) + " push ups for " + username + "."
+			return Front.PushRegisterResponse(message, counts, toGo, totalCount).Render(c.Request().Context(), c.Response().Writer)
+		}
+
+		return c.Redirect(http.StatusSeeOther, "/")
 	})
 
 	e.POST("/query", func(c echo.Context) error {

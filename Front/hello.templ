@@ -9,7 +9,10 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
     <!DOCTYPE html>
     <html>
         <head>
-            <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+            <meta name="theme-color" content="#d9f1df"/>
+            <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
             <title>Push Up Counter</title>
             <style>
                 :root {
@@ -35,16 +38,22 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
                     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
                     background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
                     color: var(--ink);
+                    -webkit-text-size-adjust: 100%;
                 }
 
                 .page-shell {
                     padding: 28px 14px;
+                    padding-top: calc(28px + env(safe-area-inset-top));
+                    padding-right: calc(14px + env(safe-area-inset-right));
+                    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+                    padding-left: calc(14px + env(safe-area-inset-left));
                     display: flex;
                     justify-content: center;
                 }
 
                 .card {
-                    width: min(760px, 100%);
+                    width: 100%;
+                    max-width: 760px;
                     background: var(--card);
                     border: 1px solid var(--line);
                     border-radius: 18px;
@@ -83,7 +92,8 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
                     padding: 10px 14px;
                     cursor: pointer;
                     font-weight: 700;
-                    font-size: 0.95rem;
+                    font-size: 1rem;
+                    min-height: 44px;
                 }
 
                 .primary-btn {
@@ -124,6 +134,9 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
                     padding: 10px;
                     border-radius: 8px;
                     border: 1px solid #c4dccb;
+                    min-height: 44px;
+                    font-size: 1rem;
+                    width: 100%;
                 }
 
                 .hidden {
@@ -174,7 +187,7 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
 
                 @media (max-width: 620px) {
                     .card {
-                        padding: 18px;
+                        padding: 16px;
                     }
 
                     .totals-grid {
@@ -206,14 +219,14 @@ templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username strin
                                 Add push ups
                             </button>
 
-                            <div id="push-box" class="push-box hidden">
+                            <form id="push-box" class="push-box hidden" method="post" action="/registerPushs" hx-post="/registerPushs" hx-target="#push-result">
                                 <label for="pushUps">How many push ups?</label>
                                 <input type="number" id="pushUps" name="pushUps" min="1" placeholder="20"/>
                                 <input type="hidden" id="push-username" name="username" value={ username }/>
-                                <button class="accent-btn" hx-post="/registerPushs" hx-target="#push-result" hx-include="#pushUps, #push-username">
+                                <button type="submit" class="accent-btn">
                                     Submit
                                 </button>
-                            </div>
+                            </form>
 
                             <div id="push-result" class="status"></div>
                         </div>
