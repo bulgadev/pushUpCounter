@@ -1,0 +1,112 @@
+package Front
+
+templ LoginPage(name string, data []string) {
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            <title>Login</title>
+            <style>
+                :root {
+                    --bg-top: #f4f9ff;
+                    --bg-bottom: #e2efff;
+                    --card: #ffffff;
+                    --ink: #18324d;
+                    --line: #d7e4f6;
+                    --button: #1f6eb6;
+                    --button-dark: #155389;
+                    --muted: #4f6680;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+                    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                    color: var(--ink);
+                    background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 16px;
+                }
+
+                .card {
+                    width: min(420px, 100%);
+                    background: var(--card);
+                    border: 1px solid var(--line);
+                    border-radius: 16px;
+                    padding: 22px;
+                    box-shadow: 0 14px 34px rgba(24, 50, 77, 0.12);
+                }
+
+                h1 {
+                    margin: 0;
+                }
+
+                .subtitle {
+                    margin: 8px 0 16px;
+                    color: var(--muted);
+                }
+
+                .form {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                input {
+                    padding: 10px;
+                    border-radius: 8px;
+                    border: 1px solid #c2d6ef;
+                    font-size: 0.96rem;
+                }
+
+                button {
+                    margin-top: 6px;
+                    padding: 10px 14px;
+                    border: 0;
+                    border-radius: 10px;
+                    font-size: 0.96rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    background: var(--button);
+                    color: #fff;
+                }
+
+                button:hover {
+                    background: var(--button-dark);
+                }
+
+                .status {
+                    margin-top: 10px;
+                    font-weight: 600;
+                }
+            </style>
+        </head>
+        <body>
+            <section class="card">
+                <h1>Login</h1>
+                <p class="subtitle">Sign in to register your push ups.</p>
+
+                <div class="form">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username"/>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password"/>
+
+                    <button hx-post="/LoginRoute" hx-target="#login-result" hx-include="#username, #password">
+                        Login
+                    </button>
+                </div>
+
+                <div id="login-result" class="status"></div>
+            </section>
+        </body>
+    </html>
+}
+

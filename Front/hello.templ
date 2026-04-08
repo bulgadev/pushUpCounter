@@ -1,0 +1,258 @@
+package Front
+
+import (
+    "strconv"
+)
+
+// 1. Update Page to accept the data RowList needs
+templ Page(rows []int, toGo int, totalCount int, isLoggedIn bool, username string) {
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            <title>Push Up Counter</title>
+            <style>
+                :root {
+                    --bg-top: #f5faf5;
+                    --bg-bottom: #d9f1df;
+                    --card: #ffffff;
+                    --ink: #143122;
+                    --muted: #4a6b58;
+                    --primary: #0e8f54;
+                    --primary-dark: #0a6e40;
+                    --accent: #0d5a9b;
+                    --accent-dark: #094476;
+                    --line: #d8e8dd;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+                    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+                    color: var(--ink);
+                }
+
+                .page-shell {
+                    padding: 28px 14px;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .card {
+                    width: min(760px, 100%);
+                    background: var(--card);
+                    border: 1px solid var(--line);
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 14px 35px rgba(20, 49, 34, 0.11);
+                }
+
+                h1 {
+                    margin: 0;
+                    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+                }
+
+                .subtitle {
+                    margin: 8px 0 18px;
+                    color: var(--muted);
+                }
+
+                .member-box,
+                .guest-box {
+                    margin-bottom: 16px;
+                    padding: 14px;
+                    border-radius: 12px;
+                    background: #f8fdf9;
+                    border: 1px solid var(--line);
+                }
+
+                .welcome {
+                    margin: 0 0 10px;
+                }
+
+                .primary-btn,
+                .accent-btn,
+                .link-btn {
+                    border: 0;
+                    border-radius: 10px;
+                    padding: 10px 14px;
+                    cursor: pointer;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                }
+
+                .primary-btn {
+                    background: var(--primary);
+                    color: #fff;
+                }
+
+                .primary-btn:hover {
+                    background: var(--primary-dark);
+                }
+
+                .accent-btn {
+                    background: var(--accent);
+                    color: #fff;
+                    margin-top: 10px;
+                }
+
+                .accent-btn:hover {
+                    background: var(--accent-dark);
+                }
+
+                .link-btn {
+                    background: #163f2a;
+                    color: #fff;
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .push-box {
+                    margin-top: 12px;
+                    display: flex;
+                    flex-direction: column;
+                    max-width: 300px;
+                }
+
+                .push-box input[type="number"] {
+                    margin-top: 6px;
+                    padding: 10px;
+                    border-radius: 8px;
+                    border: 1px solid #c4dccb;
+                }
+
+                .hidden {
+                    display: none;
+                }
+
+                .status {
+                    margin-top: 10px;
+                    font-weight: 600;
+                    color: var(--primary-dark);
+                }
+
+                .stats-panel {
+                    margin-top: 18px;
+                }
+
+                .totals-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(160px, 1fr));
+                    gap: 10px;
+                }
+
+                .total-item {
+                    background: #f5faf7;
+                    border: 1px solid var(--line);
+                    border-radius: 10px;
+                    padding: 12px;
+                }
+
+                .total-item p {
+                    margin: 0;
+                }
+
+                .rows-list {
+                    margin: 14px 0 0;
+                    padding: 0;
+                    list-style: none;
+                    display: grid;
+                    gap: 8px;
+                }
+
+                .rows-list li {
+                    background: #fff;
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                }
+
+                @media (max-width: 620px) {
+                    .card {
+                        padding: 18px;
+                    }
+
+                    .totals-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
+            <script>
+                function togglePushBox() {
+                    const box = document.getElementById("push-box");
+                    if (!box) {
+                        return;
+                    }
+
+                    box.classList.toggle("hidden");
+                }
+            </script>
+        </head>
+        <body>
+            <main class="page-shell">
+                <section class="card">
+                    <h1>Push Up Counter</h1>
+                    <p class="subtitle">Foi chatinho faze isso aq mn.</p>
+
+                    if isLoggedIn {
+                        <div class="member-box">
+                            <p class="welcome">Welcome, <strong>{ username }</strong></p>
+                            <button type="button" class="primary-btn" onclick="togglePushBox()">
+                                Add push ups
+                            </button>
+
+                            <div id="push-box" class="push-box hidden">
+                                <label for="pushUps">How many push ups?</label>
+                                <input type="number" id="pushUps" name="pushUps" min="1" placeholder="20"/>
+                                <input type="hidden" id="push-username" name="username" value={ username }/>
+                                <button class="accent-btn" hx-post="/registerPushs" hx-target="#push-result" hx-include="#pushUps, #push-username">
+                                    Submit
+                                </button>
+                            </div>
+
+                            <div id="push-result" class="status"></div>
+                        </div>
+                    } else {
+                        <div class="guest-box">
+                            <p>Login to unlock member actions.</p>
+                            <a class="link-btn" href="/login">Go to login</a>
+                        </div>
+                    }
+
+                    <div id="data-container" class="stats-panel">
+                        // 2. Call RowList directly here!
+                        @RowList(rows, toGo, totalCount)
+                    </div>
+                </section>
+            </main>
+        </body>
+    </html>
+}
+
+templ RowList(rows []int, toGo int, totalCount int) {
+    <div class="totals-grid">
+        <div class="total-item">
+            <p><strong>Total Count:</strong> { strconv.Itoa(totalCount) }</p>
+        </div>
+        <div class="total-item">
+            <p><strong>Remaining (toGo):</strong> { strconv.Itoa(toGo) }</p>
+        </div>
+    </div>
+    <ul class="rows-list">
+        for _, row := range rows {
+            <li>Push Ups: { strconv.Itoa(row) }</li>
+        }
+    </ul>
+}
+
+templ PushRegisterResponse(message string, rows []int, toGo int, totalCount int) {
+    <div id="push-result" class="status">{ message }</div>
+    <div id="data-container" class="stats-panel" hx-swap-oob="outerHTML">
+        @RowList(rows, toGo, totalCount)
+    </div>
+}
